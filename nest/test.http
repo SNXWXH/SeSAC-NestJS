@@ -1,0 +1,52 @@
+GET {{host}}
+
+### ------------------------------------ users
+### user list
+GET {{host}}/users
+
+### create
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "name": "홍길동2",
+  "email": "indiflex2@gmail.com",
+  "passwd": "as121adsfa",
+  "addr": "서울",
+  "profile": {
+    "photo": "/upload/hong.jpg"
+  },
+  "addrs": {
+    "street": "서울특별시",
+    "detail": "도봉구"
+  }
+}
+
+### user
+GET {{host}}/users/3
+
+### default-value-pipe
+GET {{host}}/users/123x/defpipe
+
+### verify
+GET {{host}}/users/verify
+
+### ------------------------------------ services
+
+### redirect
+GET {{host}}/redirect-hello?nickname=홍123&addr=서울&age=23
+
+### serviceB test
+GET {{host}}/serviceB
+
+###
+GET {{host}}/sayHello
+
+###
+
+POST {{host}}
+Content-Type: application/json
+
+{
+  name: 'xxx'
+}

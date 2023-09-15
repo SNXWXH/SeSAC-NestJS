@@ -1,0 +1,14 @@
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "localHost": "http://localhost:3000"
+    },
+    "localEnv": {
+      "host": "http://localhost:3000/api/0.1"
+      // "host.auth": "http://localhost:3000/auth/0.1"
+    },
+    "DevEnv": {
+      "host": "http://localhost:3000/auth/0.1"
+    }
+  }
+}
