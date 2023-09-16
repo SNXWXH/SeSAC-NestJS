@@ -39,14 +39,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get('auths')
-  findAllAuths() {
-    return this.usersService.findAuths();
-  }
-
-  @Post('auths')
+  @Post('/auths')
   createAuth(@Body() createAuthDto: CreateAuthDto) {
     return this.usersService.createAuth(createAuthDto);
+  }
+
+  @Get('/auths')
+  findAllAuths() {
+    return this.usersService.findAuths();
   }
 
   // (warning):id와 같은 depth

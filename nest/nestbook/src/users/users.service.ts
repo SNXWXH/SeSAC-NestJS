@@ -48,13 +48,7 @@ export class UsersService {
       (createAddrDto) => new Addr(createAddrDto),
     );
 
-    // const auth = new Auth({ ...createUserDto.auth });
-    // const auth = createUserDto.auth?.map(
-    //   (CreateAuthDto) => new Auth(CreateAuthDto),
-    // );
-
     const allAuths = await this.entityManager.find(Auth);
-
     const auth = createUserDto.auth?.map((adto) =>
       allAuths.find((a) => a.id === adto.id),
     );
@@ -63,15 +57,6 @@ export class UsersService {
 
     user.profile = profile;
     return this.entityManager.save(user);
-  }
-
-  findAuths() {
-    return this.entityManager.find(Auth);
-  }
-
-  createAuth(createAuthDto: CreateAuthDto) {
-    const auth = new Auth(createAuthDto);
-    return this.entityManager.save(auth);
   }
 
   verifyToken(email: string, token: string) {
@@ -126,5 +111,12 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+  createAuth(createAuthDto: CreateAuthDto) {
+    const auth = new Auth(createAuthDto);
+    return this.entityManager.save(auth);
+  }
+  findAuths() {
+    return this.entityManager.find(Auth);
   }
 }

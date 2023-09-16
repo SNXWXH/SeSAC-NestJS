@@ -39,8 +39,8 @@ export class User extends SuperEntity<User> {
   addrs: Addr[];
 
   //ManytoMany일 경우 JoinTable 설정
-  @ManyToMany(() => Auth, { cascade: true, onDelete: 'SET NULL' })
-  @ManyToMany(() => Auth)
+  // @ManyToMany(() => Auth, { cascade: true, onDelete: 'SET NULL' })
+  @ManyToMany(() => Auth, { cascade: true })
   @JoinTable({ name: 'UserAuth' })
   auth: Auth[];
 }
