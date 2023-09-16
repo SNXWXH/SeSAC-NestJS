@@ -1,8 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
-import { Transform } from 'class-transformer';
-import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsString,
+  IsEmail,
+  Matches,
+  IsNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 import { CreateProfileDto } from './create-profile.dto';
 import { CreateAddrDto } from './create-addr.dto';
+import { CreateAuthDto } from './create-auth.dto';
 
 export class CreateUserDto {
   @IsString()
@@ -33,8 +40,17 @@ export class CreateUserDto {
   })
   passwd: string;
 
+  //ValidateNested()를 해야 createProfileDto까지 감
+  @ValidateNested()
+  @Type(() => CreateProfileDto)
   @IsNotEmpty()
   profile: CreateProfileDto;
 
+  @ValidateNested()
+  @Type(() => CreateAddrDto)
   addrs: CreateAddrDto[];
+
+  @ValidateNested()
+  @Type(() => CreateAuthDto)
+  auth: CreateAuthDto[];
 }

@@ -1,9 +1,11 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateAddrDto {
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsString()
   street: string;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsString()
   detail: string;
 }

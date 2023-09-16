@@ -17,6 +17,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Transform } from 'class-transformer';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 const NotAcceptableId: ParseIntPipeOptions = {
   // errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE,
@@ -36,6 +37,16 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     // console.log('🚀  createUserDto:', createUserDto);
     return this.usersService.create(createUserDto);
+  }
+
+  @Get('auths')
+  findAllAuths() {
+    return this.usersService.findAuths();
+  }
+
+  @Post('auths')
+  createAuth(@Body() createAuthDto: CreateAuthDto) {
+    return this.usersService.createAuth(createAuthDto);
   }
 
   // (warning):id와 같은 depth

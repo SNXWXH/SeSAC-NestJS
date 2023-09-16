@@ -1,9 +1,11 @@
-import { IsIn, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class CreateProfileDto {
   @IsString()
+  @IsOptional()
   photo: string;
 
   @IsIn([0, 1, 2, 3])
-  role: string;
+  @IsOptional()
+  role: number;
 }

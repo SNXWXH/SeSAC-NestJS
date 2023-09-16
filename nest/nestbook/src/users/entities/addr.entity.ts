@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { User } from './user.entity';
 import { SuperEntity } from 'src/db/super.entity';
 
@@ -7,12 +13,21 @@ import { SuperEntity } from 'src/db/super.entity';
 export class Addr extends SuperEntity<Addr> {
   //기본 length 255
   //null true => nullable: true
-  @Column({ length: 64 })
+  @Column()
   street: string;
 
-  @Column({ length: 30 })
+  @Column({ length: 128 })
   detail: string;
 
-  @ManyToOne(() => User, (user) => user.addrs)
+  // @ManyToOne(() => User, (user) => user.addrs, {
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    orphanedRowAction: 'soft-delete', // 'delete'
+  })
+  @JoinColumn()
   user: User;
+
+  @DeleteDateColumn()
+  deleteAt: Date;
 }

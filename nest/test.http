@@ -9,21 +9,52 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-  "name": "홍길동2",
-  "email": "indiflex2@gmail.com",
+  "name": "홍길동4",
+  "email": "indiflex4@gmail.com",
   "passwd": "as121adsfa",
-  "addr": "서울",
   "profile": {
     "photo": "/upload/hong.jpg"
   },
-  "addrs": {
+  "addrs": [{
     "street": "서울특별시",
     "detail": "도봉구"
-  }
+  }],
+  "auth": [{"id":1, "type": "R"}]
+
 }
 
-### user
+### user - one
 GET {{host}}/users/3
+
+### auths - all
+GET {{host}}/users/auth
+
+### auths - create
+POST {{host}}/users/auth
+Content-Type: :application/json
+
+{
+  "type": "R"
+}
+
+###update-user
+PATCH {{host}}/user/1
+Content-Type: :application/json
+
+{
+  "name": "홍길동1",
+  "email": "indiflex1@gmail.com",
+  "passwd": "as121adsfa",
+  "profile": {
+    "photo": "/upload/hong.jpg"
+    "role": "2"
+  },
+  "addrs": [{
+    "street": "서울특별시",
+    "detail": "도봉구 쌍문동"
+  }],
+  "auth": [{"id":1,"type": "R"}]
+}
 
 ### default-value-pipe
 GET {{host}}/users/123x/defpipe

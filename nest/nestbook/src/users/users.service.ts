@@ -8,8 +8,10 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
-// import { CreateAddrDto } from './dto/create-addr.dto';
 import { Addr } from './entities/addr.entity';
+// import { CreateAuthDto } from './dto/create-auth.dto';
+import { Auth } from './entities/auth.entity';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,15 +40,38 @@ export class UsersService {
   //   // this.emailService.sendMail(createUserDto.email, token);
   //   return createUserDto;
   // }
-  create(createUserDto: CreateUserDto) {
+
+  async create(createUserDto: CreateUserDto) {
     const profile = new Profile({ ...createUserDto.profile, role: 0 });
+
     const addrs = createUserDto.addrs?.map(
-      (CreateAddrDto) => new Addr(CreateAddrDto),
+      (createAddrDto) => new Addr(createAddrDto),
     );
-    const user = new User({ ...createUserDto, profile, addrs });
+
+    // const auth = new Auth({ ...createUserDto.auth });
+    // const auth = createUserDto.auth?.map(
+    //   (CreateAuthDto) => new Auth(CreateAuthDto),
+    // );
+
+    const allAuths = await this.entityManager.find(Auth);
+
+    const auth = createUserDto.auth?.map((adto) =>
+      allAuths.find((a) => a.id === adto.id),
+    );
+
+    const user = new User({ ...createUserDto, profile, addrs, auth });
 
     user.profile = profile;
     return this.entityManager.save(user);
+  }
+
+  findAuths() {
+    return this.entityManager.find(Auth);
+  }
+
+  createAuth(createAuthDto: CreateAuthDto) {
+    const auth = new Auth(createAuthDto);
+    return this.entityManager.save(auth);
   }
 
   verifyToken(email: string, token: string) {
@@ -74,7 +99,7 @@ export class UsersService {
     return this.userRepository.findOne({
       where: { id },
       // profile을 찾아서 같이 달라고 한 것임
-      relations: { profile: true, addrs: true },
+      relations: { profile: true, addrs: true, auth: true },
     });
     // return this.entityManager.findOne(User, { where: { id } });
     // return this.entityManager.findOneBy(User, { id });
@@ -85,6 +110,13 @@ export class UsersService {
     const user = await this.findOne(id);
     user.name = updateUserDto.name;
     user.passwd = updateUserDto.passwd;
+
+    if (updateUserDto.passwd) user.passwd = updateUserDto.passwd;
+    if (updateUserDto.profile)
+      user.profile = new Profile(updateUserDto.profile);
+    user.addrs = updateUserDto.addrs?.map(
+      (CreateAddrDto) => new Addr(CreateAddrDto),
+    );
     return this.userRepository.save(user);
   }
 
