@@ -9,8 +9,8 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-  "name": "홍길동10",
-  "email": "indiflex10@gmail.com",
+  "name": "홍길동12",
+  "email": "indiflex12ㄴ@gmail.com",
   "passwd": "as121adsfa",
   "profile": {
     "photo": "/upload/hong.jpg"
@@ -19,7 +19,7 @@ Content-Type: application/json
     "street": "서울특별시",
     "detail": "도봉구"
   }],
-  "auth": [{"id":4, "type": "X"}]
+  "auth": [{"id":4, "type": "."},{"id":1, "type": "."}]
 
 }
 
