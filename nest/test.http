@@ -1,16 +1,20 @@
+
 GET {{host}}
 
 ### ------------------------------------ users
 ### user list
-GET {{host}}/users
+GET {{host}}/users?page=2
 
-### create
+### user - one
+GET {{host}}/users/3
+
+### user - create
 POST {{host}}/users
 Content-Type: application/json
 
 {
-  "name": "홍길동12",
-  "email": "indiflex12ㄴ@gmail.com",
+  "name": "홍길동3",
+  "email": "indiflex3@gmail.com",
   "passwd": "as121adsfa",
   "profile": {
     "photo": "/upload/hong.jpg"
@@ -19,12 +23,48 @@ Content-Type: application/json
     "street": "서울특별시",
     "detail": "도봉구"
   }],
-  "auth": [{"id":4, "type": "."},{"id":1, "type": "."}]
+  "auth": [{"id":2, "type": "."},{"id":1, "type": "."}]
 
 }
 
+### update-user
+PATCH {{host}}/users/3
+Content-Type: application/json
+
+{
+  "name": "홍길동11",
+  "email": "indiflex11@gmail.com",
+  "profile": {
+    "photo": "/upload/hong.jpg",
+    "role": 1
+  },
+  "addrs": [
+    {"street": "선유로 9길 30", "detail": "112동"},
+    {"street": "선유로 9길 31", "detail": "113동"}
+  ],
+  "auths": [
+    {"id": 1, "type": "."},
+    {"id": 3, "type": "."}
+  ]
+}
+
+
+
+### default-value-pipe
+GET {{host}}/users/123x/defpipe
+
+### verify
+GET {{host}}/users/verify
+
+
+
 ### user - one
 GET {{host}}/users/7
+
+### user - delete
+DELETE {{host}}/users/1
+
+
 
 ### auths - all
 GET {{host}}/users/auths
@@ -38,30 +78,12 @@ Content-Type: application/json
 }
 
 
-###update-user
-PATCH {{host}}/users/1
-Content-Type: application/json
-
-{
-  "name": "홍길동1",
-  "email": "indiflex1@gmail.com",
-  "passwd": "as121adsfa",
-  "profile": {
-    "photo": "/upload/hong.jpg",
-    "role": 1
-  },
-  "addrs": [{
-    "street": "서울특별시",
-    "detail": "도봉구 쌍문동"
-  }],
-  "auth": [{"type": "W"}]
-}
-
 ### default-value-pipe
 GET {{host}}/users/123x/defpipe
 
 ### verify
 GET {{host}}/users/verify
+
 
 ### ------------------------------------ services
 
@@ -82,3 +104,4 @@ Content-Type: application/json
 {
   name: 'xxx'
 }
+

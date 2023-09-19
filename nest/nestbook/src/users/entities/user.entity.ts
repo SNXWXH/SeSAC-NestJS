@@ -1,4 +1,5 @@
 import {
+  AfterInsert,
   Column,
   Entity,
   JoinColumn,
@@ -15,18 +16,15 @@ import { Auth } from './auth.entity';
 //name은 테이블명
 @Entity({ name: 'User' })
 export class User extends SuperEntity<User> {
-  // @PrimaryGeneratedColumn()
-  // id: number;
-
   //기본 length 255
   //null true => nullable: true
   @Column({ length: 30 })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ length: 120, unique: true })
   email: string;
 
-  @Column({ length: 256 })
+  @Column({ length: 128 })
   passwd: string;
 
   @OneToOne(() => Profile, { cascade: true, onDelete: 'SET NULL' })
@@ -43,4 +41,9 @@ export class User extends SuperEntity<User> {
   @ManyToMany(() => Auth, { cascade: true })
   @JoinTable({ name: 'UserAuth' })
   auth: Auth[];
+
+  @AfterInsert()
+  afterUserInsert() {
+    this.passwd = '';
+  }
 }

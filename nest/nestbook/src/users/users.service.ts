@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 // import { v1 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,6 +11,8 @@ import { Profile } from './entities/profile.entity';
 import { Addr } from './entities/addr.entity';
 import { Auth } from './entities/auth.entity';
 import { CreateAuthDto } from './dto/create-auth.dto';
+
+const CNT_PER_PAGE = 3;
 
 @Injectable()
 export class UsersService {
@@ -40,9 +42,12 @@ export class UsersService {
   //   return createUserDto;
   // }
 
+  private getAllAuth() {
+    return this.entityManager.find(Auth);
+  }
+
   async create(createUserDto: CreateUserDto) {
     const profile = new Profile({ ...createUserDto.profile, role: 0 });
-
     const addrs = createUserDto.addrs?.map(
       (createAddrDto) => new Addr(createAddrDto),
     );
@@ -53,7 +58,6 @@ export class UsersService {
     );
 
     const user = new User({ ...createUserDto, profile, addrs, auth });
-
     user.profile = profile;
     return this.entityManager.save(user);
   }
@@ -67,8 +71,14 @@ export class UsersService {
   //   return map.get(key) as T;
   // }
 
-  findAll() {
-    return this.entityManager.find(User);
+  findAll(page: number = 1) {
+    const skip = (page - 1) * CNT_PER_PAGE;
+    // return this.userRepository.find({ where: { id: MoreThan(1) } });
+    return this.entityManager.find(User, {
+      take: CNT_PER_PAGE,
+      skip,
+      order: { id: 'DESC' },
+    });
     // return this.dataSource.getRepository(User).find();
   }
 
@@ -76,11 +86,23 @@ export class UsersService {
     console.log(p, t);
   }
 
+  private async checkUser(id: number) {
+    const user = await this.entityManager.findOne(User, {
+      where: { id },
+      //!이걸 걸어줘야 정보가 같이 넘어옴 제발 같이 넘겨주셈
+      relations: { profile: true, addrs: true, auth: true },
+    });
+    if (!user) throw new NotFoundException('There is no user!');
+    return user;
+  }
+
   // promise로 반환함
-  findOne(id: number) {
+  async findOne(id: number) {
+    await this.checkUser(id);
+
     // 여기서는 new Promise를 하는 거여서
     // return될 때는 상관이 없지만, 해당 함수를 사용할 때는 비동기로 걸어줘야 함
-    return this.userRepository.findOne({
+    return this.entityManager.findOne(User, {
       where: { id },
       // profile을 찾아서 같이 달라고 한 것임
       relations: { profile: true, addrs: true, auth: true },
@@ -88,24 +110,93 @@ export class UsersService {
     // return this.entityManager.findOne(User, { where: { id } });
     // return this.entityManager.findOneBy(User, { id });
   }
-
   async update(id: number, updateUserDto: UpdateUserDto) {
-    // userRepository의 findOne은 Promise를 반환함 그래서 async/await 사용해주어야함
-    const user = await this.findOne(id);
-    user.name = updateUserDto.name;
-    user.passwd = updateUserDto.passwd;
+    return this.entityManager.transaction(async (entityManager) => {
+      // const user = await this.userRepository.findOne({ where: { id } });
+      // const user = await this.findOne(id);
+      const user = await this.checkUser(id);
+      // if (!user) throw new NotFoundException('There is no user!');
 
-    if (updateUserDto.passwd) user.passwd = updateUserDto.passwd;
-    if (updateUserDto.profile)
+      user.name = updateUserDto.name;
+
+      if (updateUserDto.passwd) user.passwd = updateUserDto.passwd;
+
+      console.log('🚀  user.profile:', user);
+      if (updateUserDto.profile.id !== user.profile.id) {
+        await entityManager.delete(Profile, { id: user.profile.id });
+      }
+
       user.profile = new Profile(updateUserDto.profile);
-    user.addrs = updateUserDto.addrs?.map(
-      (CreateAddrDto) => new Addr(CreateAddrDto),
-    );
-    return this.userRepository.save(user);
+
+      user.addrs = updateUserDto.addrs?.map(
+        (createAddrDto) => new Addr(createAddrDto),
+      );
+
+      const allAuths = await this.getAllAuth();
+      user.auth = updateUserDto.auth?.map((createAuthDto: CreateAuthDto) =>
+        allAuths.find((auth: Auth) => auth.id === createAuthDto.id),
+      );
+
+      return entityManager.save(user);
+    });
+
+    // updateUserDto.auths?.map((adto, i) =>
+    //   console.log(
+    //     'auth>>',
+    //     i,
+    //     adto,
+    //     auths.find((a) => a.id === adto.id),
+    //   ),
+    // );
+
+    // user.addrs = updateUserDto.addrs?.map((adto) => new Addr(adto));
+    // user.addrs = await Promise.all(
+    //   updateUserDto.addrs?.map(async (createAddrDto) => {
+    //     const { id, street, detail, zipcode } = createAddrDto;
+    //     console.log('🚀  id:', id, zipcode);
+    //     if (!id) return new Addr(createAddrDto);
+    //     const addr = await this.entityManager.findOneBy(Addr, { id });
+    //     addr.street = street;
+    //     addr.detail = detail;
+    //     addr.zipcode = zipcode;
+    //     return addr;
+    //   }),
+    // );
+
+    // return this.entityManager.save(user);
+    // return this.userRepository.save(user);
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
+  // async update(id: number, updateUserDto: UpdateUserDto) {
+  //   // userRepository의 findOne은 Promise를 반환함 그래서 async/await 사용해주어야함
+  //   return this.entityManager.transaction(async (entityManager) => {
+  //     // const user = await this.userRepository.findOne({ where: { id } });
+  //     // const user = await this.findOne(id);
+  //     const user = await this.checkUser(id);
+  //     // if (!user) throw new NotFoundException('There is no user!');
+
+  //     user.name = updateUserDto.name;
+
+  //     if (updateUserDto.passwd) user.passwd = updateUserDto.passwd;
+
+  //     console.log('🚀  user.profile:', user.profile);
+  //     if (updateUserDto.profile.id !== user.profile.id) {
+  //       await entityManager.delete(Profile, { id: user.profile.id });
+  //     }
+
+  //     user.profile = new Profile(updateUserDto.profile);
+
+  //     user.addrs = updateUserDto.addrs?.map(
+  //       (createAddrDto) => new Addr(createAddrDto),
+  //     );
+
+  //     const allAuths = await this.getAllAuth();
+  //     user.auth = updateUserDto.auth?.map((createAuthDto: CreateAuthDto) =>
+  //       allAuths.find((auth: Auth) => auth.id === createAuthDto.id),
+  //     );
+
+  //     return entityManager.save(user);
+  //   });
   // }
 
   remove(id: number) {

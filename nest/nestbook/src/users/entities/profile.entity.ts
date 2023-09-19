@@ -4,15 +4,16 @@ import { User } from './user.entity';
 
 @Entity({ name: 'Profile' })
 export class Profile extends SuperEntity<Profile> {
-  // @PrimaryGeneratedColumn()
-  // id: number;
-
   @Column({ nullable: true })
   photo: string;
 
   @Column()
   role: number;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   user: User;
 }

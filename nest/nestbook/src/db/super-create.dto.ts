@@ -1,7 +1,7 @@
-// import { IsInt, IsOptional } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
 
-// export class SuperDto<T> {
-//   @IsInt()
-//   @IsOptional()
-//   'id': number;
-// }
+export class SuperCreateDto {
+  @IsInt()
+  @IsOptional()
+  'id': number;
+}

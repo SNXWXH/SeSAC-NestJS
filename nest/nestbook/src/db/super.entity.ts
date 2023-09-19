@@ -1,4 +1,8 @@
-import { CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export class SuperEntity<T> {
   @PrimaryGeneratedColumn()
@@ -7,7 +11,7 @@ export class SuperEntity<T> {
   @CreateDateColumn()
   createAt: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updateAt: Date;
 
   constructor(entity: Partial<T>) {
