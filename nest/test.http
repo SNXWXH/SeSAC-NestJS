@@ -24,7 +24,6 @@ Content-Type: application/json
     "detail": "도봉구"
   }],
   "auth": [{"id":2, "type": "."},{"id":1, "type": "."}]
-
 }
 
 ### update-user
@@ -42,9 +41,8 @@ Content-Type: application/json
     {"street": "선유로 9길 30", "detail": "112동"},
     {"street": "선유로 9길 31", "detail": "113동"}
   ],
-  "auths": [
-    {"id": 1, "type": "."},
-    {"id": 3, "type": "."}
+  "auth": [
+    {"id":3, "type": "."}
   ]
 }
 
