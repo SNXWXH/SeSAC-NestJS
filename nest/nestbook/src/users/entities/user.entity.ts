@@ -33,6 +33,8 @@ export class User extends SuperEntity<User> {
   @JoinColumn({ name: 'profile' })
   profile: Profile;
 
+  //()=> Addr -> 타입 지정해주기
+  //(addr) => addr.user  -> 외래키 거는거라 생각하면 편함
   @OneToMany(() => Addr, (addr) => addr.user, { cascade: true })
   addrs: Addr[];
 

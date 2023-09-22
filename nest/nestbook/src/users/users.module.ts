@@ -8,10 +8,12 @@ import { Profile } from './entities/profile.entity';
 import { Addr } from './entities/addr.entity';
 import { Auth } from './entities/auth.entity';
 import { UserSubscriber } from './user.subscriber';
+import { Post } from 'src/posts/entities/post.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Module({
   //테이블이 추가되면 여기에도 추가
-  imports: [TypeOrmModule.forFeature([User, Profile, Addr, Auth])],
+  imports: [TypeOrmModule.forFeature([User, Profile, Addr, Auth, Post, Tag])],
   controllers: [UsersController],
   providers: [UsersService, EmailService, UserSubscriber],
   exports: [UsersService],

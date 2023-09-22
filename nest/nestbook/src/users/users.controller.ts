@@ -32,6 +32,7 @@ const NotAcceptableId: ParseIntPipeOptions = {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  //status: 200
   @HttpCode(HttpStatus.OK)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -72,8 +73,13 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  // @Get()
+  // findAll(@Query('page', ParseIntPipe) page: number) {
+  //   return this.usersService.findAll(page);
+  // }
+
   @Get()
-  findAll(@Query('page', ParseIntPipe) page: number) {
+  findAll(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number) {
     return this.usersService.findAll(page);
   }
 

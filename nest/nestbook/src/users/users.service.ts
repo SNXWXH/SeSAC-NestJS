@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
 // import { v1 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { EmailService } from '../email/email.service';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+// import { EmailService } from '../email/email.service';
+// import { DataSource, EntityManager, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
@@ -19,10 +21,10 @@ export class UsersService {
   private tokenMap = new Map<string, string>();
 
   constructor(
-    private readonly config: ConfigService,
-    private readonly emailService: EmailService,
+    // private readonly config: ConfigService,
+    // private readonly emailService: EmailService,
+    // private readonly dataSource: DataSource,
     private readonly entityManager: EntityManager,
-    private readonly dataSource: DataSource,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {
     // console.log(
@@ -96,20 +98,42 @@ export class UsersService {
     return user;
   }
 
-  // promise로 반환함
   async findOne(id: number) {
     await this.checkUser(id);
 
-    // 여기서는 new Promise를 하는 거여서
-    // return될 때는 상관이 없지만, 해당 함수를 사용할 때는 비동기로 걸어줘야 함
+    // return this.userRepository.findOne({
+    //   where: { id },
+    //   relations: { profile: true, addrs: true },
+    // });
+
     return this.entityManager.findOne(User, {
       where: { id },
-      // profile을 찾아서 같이 달라고 한 것임
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createAt: true,
+        updateAt: true,
+      },
       relations: { profile: true, addrs: true, auth: true },
     });
-    // return this.entityManager.findOne(User, { where: { id } });
     // return this.entityManager.findOneBy(User, { id });
   }
+
+  // // promise로 반환함
+  // async findOne(id: number) {
+  //   await this.checkUser(id);
+
+  //   // 여기서는 new Promise를 하는 거여서
+  //   // return될 때는 상관이 없지만, 해당 함수를 사용할 때는 비동기로 걸어줘야 함
+  //   return this.entityManager.findOne(User, {
+  //     where: { id },
+  //     // profile을 찾아서 같이 달라고 한 것임
+  //     relations: { profile: true, addrs: true, auth: true },
+  //   });
+  //   // return this.entityManager.findOne(User, { where: { id } });
+  // }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     return this.entityManager.transaction(async (entityManager) => {
       // const user = await this.userRepository.findOne({ where: { id } });
@@ -139,65 +163,7 @@ export class UsersService {
 
       return entityManager.save(user);
     });
-
-    // updateUserDto.auths?.map((adto, i) =>
-    //   console.log(
-    //     'auth>>',
-    //     i,
-    //     adto,
-    //     auths.find((a) => a.id === adto.id),
-    //   ),
-    // );
-
-    // user.addrs = updateUserDto.addrs?.map((adto) => new Addr(adto));
-    // user.addrs = await Promise.all(
-    //   updateUserDto.addrs?.map(async (createAddrDto) => {
-    //     const { id, street, detail, zipcode } = createAddrDto;
-    //     console.log('🚀  id:', id, zipcode);
-    //     if (!id) return new Addr(createAddrDto);
-    //     const addr = await this.entityManager.findOneBy(Addr, { id });
-    //     addr.street = street;
-    //     addr.detail = detail;
-    //     addr.zipcode = zipcode;
-    //     return addr;
-    //   }),
-    // );
-
-    // return this.entityManager.save(user);
-    // return this.userRepository.save(user);
   }
-
-  // async update(id: number, updateUserDto: UpdateUserDto) {
-  //   // userRepository의 findOne은 Promise를 반환함 그래서 async/await 사용해주어야함
-  //   return this.entityManager.transaction(async (entityManager) => {
-  //     // const user = await this.userRepository.findOne({ where: { id } });
-  //     // const user = await this.findOne(id);
-  //     const user = await this.checkUser(id);
-  //     // if (!user) throw new NotFoundException('There is no user!');
-
-  //     user.name = updateUserDto.name;
-
-  //     if (updateUserDto.passwd) user.passwd = updateUserDto.passwd;
-
-  //     console.log('🚀  user.profile:', user.profile);
-  //     if (updateUserDto.profile.id !== user.profile.id) {
-  //       await entityManager.delete(Profile, { id: user.profile.id });
-  //     }
-
-  //     user.profile = new Profile(updateUserDto.profile);
-
-  //     user.addrs = updateUserDto.addrs?.map(
-  //       (createAddrDto) => new Addr(createAddrDto),
-  //     );
-
-  //     const allAuths = await this.getAllAuth();
-  //     user.auth = updateUserDto.auth?.map((createAuthDto: CreateAuthDto) =>
-  //       allAuths.find((auth: Auth) => auth.id === createAuthDto.id),
-  //     );
-
-  //     return entityManager.save(user);
-  //   });
-  // }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
