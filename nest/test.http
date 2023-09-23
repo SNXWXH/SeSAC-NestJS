@@ -1,6 +1,48 @@
 
 GET {{host}}
 
+### ------------------------------------ posts
+
+### post - one
+GET {{host}}/posts/1
+
+### post - by tagname
+GET {{host}}/posts?tname=tag111
+
+### post - create
+GET {{host}}/posts
+Content-Type: application/json
+
+{
+  "title": "홍길동 title22...",
+  "content": "content2222...",
+  "writer": 14
+}
+
+
+### post - update
+POST {{host}}/posts
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "홍길동 title22...",
+  "content": "content2222...",
+  "writer": 14
+}
+
+### update user - small (except passwd, profile)
+PATCH {{host}}/posts/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "홍길동 title22...",
+  "content": "content2222...",
+  "writer": 14
+}
+
+
 ### ------------------------------------ users
 ### user list
 GET {{host}}/users?page=2
@@ -13,8 +55,8 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-  "name": "홍길동3",
-  "email": "indiflex3@gmail.com",
+  "name": "홍길동",
+  "email": "indiflex@gmail.com",
   "passwd": "as121adsfa",
   "profile": {
     "photo": "/upload/hong.jpg"
@@ -27,12 +69,12 @@ Content-Type: application/json
 }
 
 ### update-user
-PATCH {{host}}/users/3
+PATCH {{host}}/users/1
 Content-Type: application/json
 
 {
-  "name": "홍길동11",
-  "email": "indiflex11@gmail.com",
+  "name": "홍길동1",
+  "email": "indiflex1@gmail.com",
   "profile": {
     "photo": "/upload/hong.jpg",
     "role": 1
@@ -42,11 +84,10 @@ Content-Type: application/json
     {"street": "선유로 9길 31", "detail": "113동"}
   ],
   "auth": [
-    {"id":3, "type": "."}
+    {"id":3, "type": "."},
+    {"id":1, "type": "."}
   ]
 }
-
-
 
 ### default-value-pipe
 GET {{host}}/users/123x/defpipe
@@ -58,6 +99,10 @@ GET {{host}}/users/verify
 
 ### user - one
 GET {{host}}/users/7
+
+
+### user - find-one
+GET {{host}}/users
 
 ### user - delete
 DELETE {{host}}/users/1
@@ -72,7 +117,7 @@ POST {{host}}/users/auths
 Content-Type: application/json
 
 {
-  "type": "X"
+  "type": "R"
 }
 
 
